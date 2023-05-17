@@ -1,0 +1,75 @@
+#!/bin/bash
+
+# Define the path to the light and dark wallpaper folders
+light_path="$HOME/Pictures/wallpapers/Dynamic-Wallpapers/Light"
+dark_path="$HOME/Pictures/wallpapers/Dynamic-Wallpapers/Dark"
+
+# Determine the current wallpaper mode by checking a configuration file
+if [ "$(cat ~/.wallpaper_mode)" = "light" ]; then
+  current_mode="light"
+else
+  current_mode="dark"
+fi
+## check swww daemon ##
+swww query
+if [ $? -eq 1 ] ; then
+    swww init
+    sleep 2.5
+fi
+
+Wall_Set()
+{
+    swww img $1 \
+    --transition-bezier .43,1.19,1,.4 \
+    --transition-type grow \
+    --transition-duration 1 \
+    --transition-fps 144 \
+    --transition-pos bottom-right
+}
+
+# Switch to the opposite wallpaper mode
+if [ "$current_mode" = "light" ]; then
+  # Find the corresponding dark wallpaper if one exists
+  current_wallpaper="$(cat ~/.current_wallpaper)"
+  corresponding_dark_wallpaper="${current_wallpaper/_light/_dark}"
+
+  if [ -f "${dark_path}/${corresponding_dark_wallpaper}" ]; then
+    notify-send -h string:x-canonical-private-synchronous:sys-notify -u normal "Switching to dark mode" &
+    # Corresponding wallpaper found, set it as the background
+    $Wall_Set "${dark_path}/${corresponding_dark_wallpaper}" 
+  else
+    # No corresponding wallpaper found, choose a random one from the dark folder
+    random_dark_wallpaper="$(find "${dark_path}" -type f -iname '*_dark.jpg' -print0 | shuf -n1 -z | xargs -0 basename)"
+    $Wall_Set "${dark_path}/${random_dark_wallpaper}" 
+  fi
+
+  # Update the configuration file to reflect the new wallpaper mode and current wallpaper
+  echo "dark" > ~/.wallpaper_mode
+  echo "${dark_path}/${corresponding_dark_wallpaper}" > ~/.current_wallpaper
+
+else
+  # Find the corresponding light wallpaper if one exists
+  current_wallpaper="$(cat ~/.current_wallpaper)"
+  corresponding_light_wallpaper="${current_wallpaper/_dark/_light}"
+
+  if [ -f "${light_path}/${corresponding_light_wallpaper}" ]; then
+    notify-send -h string:x-canonical-private-synchronous:sys-notify -u normal "Switching to light mode" &
+    # Corresponding wallpaper found, set it as the background
+    $Wall_Set "${light_path}/${corresponding_light_wallpaper}" 
+  else
+    # No corresponding wallpaper found, choose a random one from the light folder
+    random_light_wallpaper="$(find "${light_path}" -type f -iname '*_light.jpg' -print0 | shuf -n1 -z | xargs -0 basename)"
+    $Wall_Set "${light_path}/${random_light_wallpaper}" 
+  fi
+
+  # Update the configuration file to reflect the new wallpaper mode and current wallpaper
+  echo "light" > ~/.wallpaper_mode
+  echo "${light_path}/${corresponding_light_wallpaper}" > ~/.current_wallpaper
+fi
+
+## check swww daemon ##
+swww query
+if [ $? -eq 1 ] ; then
+    swww init
+    sleep 2.5
+fi
