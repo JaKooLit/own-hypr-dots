@@ -1,0 +1,22 @@
+#!/bin/bash
+DIR=$HOME/Pictures/wallpapers
+
+# Use find command to search for image files in DIR and its subdirectories
+PICS=($(find ${DIR} -type f \( -name "*.jpg" -o -name "*.jpeg" -o -name "*.png" -o -name "*.gif" \)))
+
+# Randomly select an image file
+RANDOMPIC=${PICS[$RANDOM % ${#PICS[@]}]}
+
+# Kill existing instances of swaybg and swww-daemon
+if [[ $(pidof swaybg) ]]; then
+  pkill swaybg
+fi
+
+if [[ $(pidof swww-daemon) ]]; then
+  swww kill
+fi
+
+# Set the random image as the wallpaper using swaybg
+swaybg -m fill -i "${RANDOMPIC}" &
+
+## notify-send "${RANDOMPICS}"

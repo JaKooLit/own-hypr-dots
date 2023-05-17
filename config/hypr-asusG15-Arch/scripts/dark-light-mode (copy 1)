@@ -1,0 +1,62 @@
+#!/bin/bash
+
+# Define the path to the light and dark wallpaper folders
+light_path="$HOME/Pictures/wallpapers/Dynamic-Wallpapers/Dark"
+dark_path="$HOME/Pictures/wallpapers/Dynamic-Wallpapers/Light"
+
+# Determine the current wallpaper mode by checking a configuration file
+if [ "$(cat ~/.wallpaper_mode)" = "light" ]; then
+  current_mode="light"
+else
+  current_mode="dark"
+fi
+
+# Switch to the opposite wallpaper mode
+if [ "$current_mode" = "light" ]; then
+  # Find a corresponding dark wallpaper if one exists
+  current_wallpaper="$(cat ~/.current_wallpaper)"
+  corresponding_dark_wallpaper="$(echo $current_wallpaper | sed "s,$light_path,$dark_path,g" | sed "s/_light/_dark/")"
+  
+  if [ -f "$corresponding_dark_wallpaper" ]; then
+    notify-send -h string:x-canonical-private-synchronous:sys-notify -u normal "Switching to dark mode" &
+    # Corresponding wallpaper found, set it as the background
+    swww img "$corresponding_dark_wallpaper" --transition-fps 30 --transition-type any --transition-duration 3
+    
+    # Send notification that the wallpaper mode has changed
+  else
+    # No corresponding wallpaper found, choose a random one from the dark folder
+    random_dark_wallpaper="$(find "${dark_path}" -type f -name '*_dark*' -print0 | shuf -n1 -z | xargs -0)"
+    swww img "$random_dark_wallpaper" --transition-fps 30 --transition-type any --transition-duration 3
+  fi
+  
+  # Update the configuration file to reflect the new wallpaper mode and current wallpaper
+  echo "dark" > ~/.wallpaper_mode
+  echo "$corresponding_dark_wallpaper" > ~/.current_wallpaper
+  
+  # Update Waybar CSS style
+  #sed -i 's/light-theme/dark-theme/g' ~/.config/waybar/config
+
+else
+  # Find a corresponding light wallpaper if one exists
+  current_wallpaper="$(cat ~/.current_wallpaper)"
+  corresponding_light_wallpaper="$(echo $current_wallpaper | sed "s,$dark_path,$light_path,g" | sed "s/_dark/_light/")"
+  
+  if [ -f "$corresponding_light_wallpaper" ]; then
+    notify-send -h string:x-canonical-private-synchronous:sys-notify -u normal "Switching to light mode" &
+    # Corresponding wallpaper found, set it as the background
+    swww img "$corresponding_light_wallpaper" --transition-fps 30 --transition-type any --transition-duration 3
+    
+    # Send notification that the wallpaper mode has changed
+  else
+    # No corresponding wallpaper found, choose a random one from the light folder
+    random_light_wallpaper="$(find "${light_path}" -type f -name '*_light*' -print0 | shuf -n1 -z | xargs -0)"
+    swww img "$random_light_wallpaper" --transition-fps 30 --transition-type any --transition-duration 3
+  fi
+  
+  # Update the configuration file to reflect the new wallpaper mode and current wallpaper
+  echo "light" > ~/.wallpaper_mode
+  echo "$corresponding_light_wallpaper" > ~/.current_wallpaper
+  
+  # Update Waybar CSS style
+  #sed -i 's/dark-theme/light-theme/g' ~/.config/waybar/config
+fi

@@ -1,0 +1,130 @@
+## NEW
+
+# Refer to the wiki for more information.
+
+#Sourcing external config files
+source=~/.config/hypr/configs/exec.conf
+source=~/.config/hypr/configs/keybinds.conf
+source=~/.config/hypr/configs/monitors.conf
+source=~/.config/hypr/configs/window_rules.conf
+
+
+input {
+    # kb_file =
+    kb_layout = us
+    # kb_variant =
+    # kb_model =
+    # kb_options = ctrl:swapcaps
+    # kb_rules =
+    sensitivity = 0.5 # for mouse cursor
+
+    follow_mouse = 1
+
+    scroll_method = 2fg
+
+    touchpad {
+        natural_scroll = false
+        disable_while_typing = true
+        tap-to-click = true
+    }
+}
+
+general {
+    gaps_in = 4
+    gaps_out = 10
+    border_size = 2
+    col.active_border = rgb(7287fd) rgb(c6a0f6) rgb(ca9ee6) rgb(cba6f7) 45deg
+    col.inactive_border = 0xff313244
+    col.group_border = 0xff89dceb
+    col.group_border_active = 0xfff9e2af
+    cursor_inactive_timeout = 5
+    resize_on_border = true
+}
+
+
+decoration {
+    rounding = 8
+    multisample_edges = true
+
+    active_opacity = 1.0
+    inactive_opacity = 0.9
+    fullscreen_opacity = 0.95
+
+    dim_inactive = false
+    dim_strength = 0.05
+
+    blur = true
+    blur_size = 8
+    blur_passes = 3
+    blur_new_optimizations = true
+    blur_xray = true
+    blur_ignore_opacity = true
+
+    drop_shadow = true
+    shadow_ignore_window = true
+    shadow_range = 50
+    shadow_render_power = 4
+    col.shadow = 0x99161925
+    col.shadow_inactive = 0x55161925
+    # Your blur "amount" is blur_size * blur_passes, but high blur_size (over around 5-ish) will produce artifacts.
+    # if you want heavy blur, you need to up the blur_passes.
+    # the more passes, the more you can up the blur_size without noticing artifacts.
+
+    # Blurring layerSurfaces
+    # blurls = gtk-layer-shell
+    # blurls = waybar
+    # blurls = lockscreen
+    # blurls = wofi
+    # blurls = launcher
+}
+
+
+animations {
+    enabled = true
+    # bezier = overshot, 0.05, 0.9, 0.1, 1.1
+    bezier = overshot, 0.13, 0.99, 0.29, 1.1
+    animation = windows, 1, 4, overshot, slide
+    animation = border, 1, 10, default
+    animation = fade, 1, 10, default
+    animation = workspaces, 1, 6, overshot, slidevert
+}
+
+
+
+
+dwindle {
+    pseudotile = true # enable pseudotiling on dwindle
+    force_split = 0
+    preserve_split = true
+}
+
+
+master {
+
+}
+
+
+gestures {
+    workspace_swipe = true
+    workspace_swipe_invert = false
+    workspace_swipe_fingers = 4
+}
+
+
+misc {
+    disable_hyprland_logo = true
+    disable_splash_rendering = true
+    mouse_move_enables_dpms = true
+    vrr = 2
+    enable_swallow = true
+    no_direct_scanout = true #for fullscreen games
+    focus_on_activate = false
+    swallow_regex = ^()$
+}
+
+binds {
+    allow_workspace_cycles = true
+}
+
+
+
